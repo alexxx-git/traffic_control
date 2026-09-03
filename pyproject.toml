@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "ipykernel>=7.3.0",
     "opencv-python>=5.0.0.93",
     "ruff>=0.16.5",
     "ultralytics>=8.4.138",
