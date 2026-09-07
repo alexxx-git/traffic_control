@@ -39,6 +39,8 @@ Thumbs.db
 # Logs
 *.log
 
+#Weights
+weights/*
 # Data (раскомментируй, если не хочешь коммитить датасеты/модели)
 # *.csv
 # *.parquet
