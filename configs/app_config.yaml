@@ -23,7 +23,8 @@ general:
 
 # ------------------------------------------------- NODES --------------------------------------------------
 video_reader:
-  src: ${oc.env:VIDEO_SRC} # path to file
+  src: "data/night.mp4" # path to file
+  skip_time: "0" #how much time delay beetwen frames in ms
 
   
 
