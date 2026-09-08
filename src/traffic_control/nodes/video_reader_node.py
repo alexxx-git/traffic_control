@@ -3,7 +3,6 @@ import time
 import pathlib as path
 import logging
 import json
-
 from elements import FrameElement
 
 logger=logging.getLogger(__name__)

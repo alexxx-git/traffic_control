@@ -11,7 +11,7 @@ from .counting_result import CountingResult
 @dataclass
 class FrameElement:
     raw: RawFrame
-    roads_info: dict
+    zones_info: dict
 
     detection: DetectionResult = field(default_factory=DetectionResult)
     tracking: TrackingResult = field(default_factory=TrackingResult)

@@ -27,23 +27,38 @@ video_reader:
   skip_time: "0" #how much time delay beetwen frames in ms
   zones: "config/zones.json" #json with in-out zones of road
 
-  
+
+detection_node:
+  weight_path: weights/yolov11s.pt
+  classes_to_detect: [2,3,5,7]  # all transport YOLO
+  confidence: 0.60  # than more value less find
+  iou: 0.7  # NMS more values more find
+  imgsz: 640  # default value
+
 
 tracking_node:  
-  # first_track_thresh: 0.5  # Пороговое значение для первичной инициализации трека
-  # second_track_thresh: 0.10  # Пороговое значение для поддержания трека
-  # match_thresh: 0.95  # Чем больше значение, тем больше может быть расстояние между соседними обнаруженими чтобы держать трек
-  # track_buffer: 125  # Время жизни трека после исчезновения из поля зрения (измеряется в числе кадров)
+  first_track_thresh: 0.5  # Пороговое значение для первичной инициализации трека
+  second_track_thresh: 0.60  # Пороговое значение для поддержания трека
+  match_thresh: 0.95  # Чем больше значение, тем больше может быть расстояние между соседними обнаруженими чтобы держать трек
+  track_buffer: 125  # Время жизни трека после исчезновения из поля зрения (измеряется в числе кадров)
 
 
 show_node:
   scale : 0.6  # Scale for imshow=True
   imshow: False  # open imshow windows?
-  fps_counter_N_frames_stat : 15  # lap for average frames
+  fps_window_N_frames : 15  # lap for average frames
   show_fps : True  
-  show_roi: True  # show bordersof roi. its not zones
+  show_roi_border: True  # show borders of roi. its not zones
+  show_roi_detector_border: True  # show borders of roi detector. its some small than roi_border
   show_zones: True #show borders zones
-  show_fill_zones: False # Fill zones with colors
+  show_only_yolo_detection: False
+
+  fontFace: "1"
+  fontScale : "2"
+  thickness : "2"
+
+  # show_fill_zones: False # Fill zones with colors NO NEED MAY BE
+
   # show_only_yolo_detections : False  # Отображать лишь результаты детекции без учета трекинга и прочей логики кода
   # show_track_id_different_colors: False  # Отображать цвет бокса согласно id трека, а не логике прибытия объекта
   # show_info_statistics: False  # Вывод информации о статистике в отдельном окне справа от кадра
