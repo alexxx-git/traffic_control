@@ -8,4 +8,4 @@ class RawFrame:
     frame: np.ndarray     # Кадр в BGR формате
     timestamp: float     # Время с начала потока (в секундах)
     frame_num: int     # Номер кадра в потоке
-    back_layer_frame: np.ndarray
+    

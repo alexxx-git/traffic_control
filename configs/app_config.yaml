@@ -20,16 +20,17 @@ general:
   colors_of_zones: # in bgr
     1: [0,255,0] #green
     2: [255,0,0] #red
-
+  zones: "configs/zones.json" #json with in-out zones of road
+  roi: "configs/roi.json"
 # ------------------------------------------------- NODES --------------------------------------------------
 video_reader:
   src: "data/night.mp4" # path to file
   skip_time: "0" #how much time delay beetwen frames in ms
-  zones: "config/zones.json" #json with in-out zones of road
+  
 
 
 detection_node:
-  weight_path: weights/yolov11s.pt
+  weight_path: weights/yolo11s.pt
   classes_to_detect: [2,3,5,7]  # all transport YOLO
   confidence: 0.60  # than more value less find
   iou: 0.7  # NMS more values more find
@@ -52,7 +53,6 @@ show_node:
   show_roi_detector_border: True  # show borders of roi detector. its some small than roi_border
   show_zones: True #show borders zones
   show_only_yolo_detection: False
-
   fontFace: "1"
   fontScale : "2"
   thickness : "2"

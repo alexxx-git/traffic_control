@@ -1,8 +1,7 @@
 import hydra
 from traffic_control.nodes import VideoReader,DetectionTrackingNodes, ShowNode
 # from src.traffic_control.utils import check_and_set_env_var
-
-@hydra.main(version_base=None, config_path="config", config_name="app_config")
+@hydra.main(version_base=None, config_path="configs", config_name="app_config")
 def main(config) -> None:
     print("Hello from traffic-control!")
     video_reader=VideoReader(config["video_reader"])

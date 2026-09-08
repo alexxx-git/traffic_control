@@ -2,9 +2,8 @@ from ultralytics import YOLO
 import cv2 as cv
 import torch
 import numpy as np
-from utils.utils import count_time
-from collections import deque
-from elements.frame_element import FrameElement
+from traffic_control.utils import count_time
+from traffic_control.elements import FrameElement
 
 
 class DetectionTrackingNodes:
@@ -36,4 +35,4 @@ class DetectionTrackingNodes:
             frame_element.tracking.conf= out.boxes.conf.cpu().numpy()
             frame_element.tracking.id_list= out.boxes.id.int().cpu().numpy()
             frame_element.tracking.cls=out.boxes.cls.int().cpu().numpy()
-    
+        return frame_element

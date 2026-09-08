@@ -1,10 +1,9 @@
-from dataclasses import dataclass
-
+from dataclasses import dataclass, field
+import numpy as np
 
 @dataclass
 class TrackingResult:
-    conf: list | None = None
-    cls: list | None = None
-    xyxy: list[list] | None = None
-    id_list: list | None = None    # id отслеживаемых объектов
-    
+    xyxy: np.ndarray = field(default_factory=lambda: np.empty((0, 4)))
+    cls: np.ndarray = field(default_factory=lambda: np.empty((0,), dtype=int))
+    id_list: np.ndarray = field(default_factory=lambda: np.empty((0,), dtype=int))
+    conf: np.ndarray = field(default_factory=lambda: np.empty((0,)))

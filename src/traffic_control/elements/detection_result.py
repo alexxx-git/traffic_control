@@ -1,9 +1,10 @@
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+import numpy as np
 
 
 @dataclass
 class DetectionResult:
-    conf: list | None = None
-    cls: list | None = None
-    xyxy: list[list] | None = None
+    xyxy: np.ndarray = field(default_factory=lambda: np.empty((0, 4)))
+    cls: np.ndarray = field(default_factory=lambda: np.empty((0,), dtype=int))
+    conf: np.ndarray = field(default_factory=lambda: np.empty((0,)))

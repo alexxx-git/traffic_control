@@ -1,6 +1,6 @@
 import cv2 as cv
-from utils.utils import FPSCounter, count_time
-from elements import FrameElement
+from traffic_control.utils import FPSCounter, count_time
+from traffic_control.elements import FrameElement
 import json
 import numpy as np
 
@@ -21,29 +21,36 @@ class ShowNode:
 
         self.fps_window_N_frames=config_show_node["fps_window_N_frames"]
         self.fps_counter=FPSCounter(self.fps_window_N_frames)
-
+        self.back_layer_frame =None
         self.show_fps=config_show_node["show_fps"]
         self.show_roi_border=config_show_node["show_roi_border"]
         self.show_roi_detector_border=config_show_node["show_roi_detector_border"]
 
         self.show_zones=config_show_node["show_zones"]
-        self.show_only_yolo_detection=config["show_only_yolo_detection"]
+        self.show_only_yolo_detection=config_show_node["show_only_yolo_detection"]
         
-        with open(config["zones"], "r") as file:
-            raw_data_zones=json.load(file)
-        self.roi_road={key: [int(value) for value in values] for key, values in raw_data_zones["roi_count_road"].items()} #read main_road zones
-        
+        with open(config["general"]["zones"], "r") as file:
+            raw_zones = json.load(file)
+        self.zones = {
+            name: {"points": np.array(data["points"], dtype=np.int32), "color": tuple(data["color"])}
+            for name, data in raw_zones.items()
+        }
+
+        with open(config["general"]["roi"], "r") as file:
+            raw_roi = json.load(file)
+        self.roi_show_box = tuple(raw_roi["show"]["box"])
+        self.roi_show_color = tuple(raw_roi["show"]["color"])
+        self.roi_detection_box = tuple(raw_roi["detection"]["box"])
+        self.roi_detection_color = tuple(raw_roi["detection"]["color"])        
+            
         self.fontFace = 1
         self.fontScale = 2.0
         self.thickness = 2
 
- 
+
     @count_time
     def process(self,frame_element:FrameElement, fps_counter=None):
-
-
         frame_result=frame_element.raw.frame.copy()
-        back_layer_frame=frame_element.raw.back_layer_frame
         if self.show_only_yolo_detection :
             #yolo detection
             for box, class_name in zip(frame_element.detection.xyxy, frame_element.detection.cls):
@@ -72,14 +79,14 @@ class ShowNode:
                             color=(0, 0, 255),
                            )
         if self.show_roi_border:
-            cv.rectangle(frame_result,self.roi_road["show"],(255,221,0),2) # cian color for border roi
+            cv.rectangle(frame_result,self.roi_show_box,self.roi_show_color,2) # cian color for border roi
         if self.show_roi_detector_border:
-            cv.rectangle(frame_result,self.roi_road["detection"],(0,225,255),2) # yellow color for border detection
+            cv.rectangle(frame_result,self.roi_detection_box,self.roi_detection_color,2) # yellow color for border detection
         
         if self.show_zones: # show in_out zones
             if back_layer_frame is None:
-                back_layer_frame=self.add_layer(np.zeros((frame_result.shape), dtype=np.uint8),frame_element.zones_info[1],mask_color=(0, 255, 0))
-                back_layer_frame=self.add_layer(back_layer_frame,frame_element.zones_info[2],mask_color=(0, 0, 255))
+                back_layer_frame=self.add_layer(np.zeros((frame_result.shape), dtype=np.uint8),self.zones["zone_left"]["points"],mask_color=(self.zones["zone_left"]["color"]))
+                back_layer_frame=self.add_layer(back_layer_frame,self.zones["zone_right"]["points"],mask_color=self.zones["zone_right"]["color"])
                 frame_element.raw.back_layer_frame=back_layer_frame
             frame_result=cv.addWeighted(back_layer_frame,1, frame_result, 1, 0)
         if self.show_fps:
