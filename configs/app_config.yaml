@@ -25,6 +25,7 @@ general:
 video_reader:
   src: "data/night.mp4" # path to file
   skip_time: "0" #how much time delay beetwen frames in ms
+  zones: "config/zones.json" #json with in-out zones of road
 
   
 
@@ -36,12 +37,13 @@ tracking_node:
 
 
 show_node:
-  # scale : 0.6  # Масштабирование итогового окна результатов при imshow=True
-  # imshow: False  # Нужно ли выводить видео в процессе обработки
-  # fps_counter_N_frames_stat : 15  # Окно усредения fsp счетчика
-  # draw_fps_info : True  # Указывать ли fps обработки
-  # show_roi: True  # Показывать ли регионы примыкающих дорог 
-  # overlay_transparent_mask: False # Заливка регионов при show_roi=True (медленная операция)
+  scale : 0.6  # Scale for imshow=True
+  imshow: False  # open imshow windows?
+  fps_counter_N_frames_stat : 15  # lap for average frames
+  show_fps : True  
+  show_roi: True  # show bordersof roi. its not zones
+  show_zones: True #show borders zones
+  show_fill_zones: False # Fill zones with colors
   # show_only_yolo_detections : False  # Отображать лишь результаты детекции без учета трекинга и прочей логики кода
   # show_track_id_different_colors: False  # Отображать цвет бокса согласно id трека, а не логике прибытия объекта
   # show_info_statistics: False  # Вывод информации о статистике в отдельном окне справа от кадра
