@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from collections import deque
+from collections import deque, Counter,defaultdict
 from time import monotonic
 import os
 import functools
@@ -48,3 +48,15 @@ def count_time(func):
         logger_profile.debug(f"{owner}.{func.__name__}, time spent {delta_time_ms:.2f} msecs")
         return out
     return wrapper
+class ClassSmoother:
+    def __init__(self) -> None:
+        self._class_votes:dict[int,Counter] = defaultdict(Counter)
+    def update(self,track_id:int,cls:int,conf)->int:
+        track_id=int(track_id)
+        cls=int(cls)
+        self._class_votes[track_id][cls]+=conf
+        return self._class_votes[track_id].most_common(1)[0][0]
+    def cleanup(self, active_ids: set[int]) -> None:
+        inactiv_ids = set(self._class_votes) - active_ids
+        for tid in inactiv_ids:
+            del self._class_votes[tid]
