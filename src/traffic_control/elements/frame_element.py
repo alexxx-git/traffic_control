@@ -13,7 +13,7 @@ class FrameElement:
     raw: RawFrame
     detection: DetectionResult = field(default_factory=DetectionResult)
     tracking: TrackingResult = field(default_factory=TrackingResult)
-    # counting: CountingResult = field(default_factory=CountingResult)
+    counting: CountingResult = field(default_factory=CountingResult)
     frame_result: np.ndarray | None = None
     timestamp_date: float = field(default_factory=time.time)
     # send_info_of_frame_to_db: bool = False 

@@ -12,6 +12,8 @@ class VideoReader:
         self.video_path=config["src"]
         self.stream=cv.VideoCapture(self.video_path)
         self.skip_time=config["skip_time"]
+        self.is_live=self.stream.get(cv.CAP_PROP_FRAME_COUNT)<=0
+        self._start_time=time.monotonic()
         self.last_frame_time=0
        
     def process(self):
@@ -21,7 +23,11 @@ class VideoReader:
             if not succes:
                 logger.warning("Cant open frame from stream")
                 break
-            timestamp=self.stream.get(cv.CAP_PROP_POS_MSEC)
+            if self.is_live:
+                timestamp = (time.monotonic() - self._start_time) * 1000
+            else:
+                timestamp = self.stream.get(cv.CAP_PROP_POS_MSEC)
+
             # if (timestamp - self.last_frame_time) < self.skip_time:
             #     continue
             frame_number+=1
