@@ -112,7 +112,9 @@ class ShowNode:
         frame_show=cv.resize(frame_result.copy(), (-1, -1), fx=self.scale, fy=self.scale)
         if self.imshow:
             cv.imshow(frame_element.raw.source,frame_show)
-            cv.waitKey(1)
+            if cv.waitKey(1) & 0xFF == ord("q"):
+                exit
+
         return frame_element
     
     def add_layer(self,img, points, mask_color=(0, 255, 255), alpha=0.3):

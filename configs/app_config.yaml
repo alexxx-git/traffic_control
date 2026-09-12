@@ -27,7 +27,7 @@ video_reader:
 
 
 detection_node:
-  weight_path: weights/yolo11n.pt
+  weight_path: weights/yolo11x.pt
   classes_to_detect: [2,3,5,7]  # all transport YOLO
   confidence: 0.40  # than more value less find
   iou: 0.7  # NMS more values more find
@@ -54,6 +54,12 @@ show_node:
   fontFace: "1"
   fontScale : "2"
   thickness : "2"
+
+video_server_node:
+  template_folder:  "src/traffic_control/utils/templates"
+  index_page : index.html
+  host_ip : localhost
+  port: 8100
 
   # show_fill_zones: False # Fill zones with colors NO NEED MAY BE
 
