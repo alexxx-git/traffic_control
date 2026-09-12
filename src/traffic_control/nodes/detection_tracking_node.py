@@ -27,7 +27,7 @@ class DetectionTrackingNodes:
         self.class_smoother=ClassSmoother()
 
     @count_time
-    def process(self, frame_element:FrameElement):
+    def process(self, frame_element:FrameElement)->FrameElement:
         frame=frame_element.raw.frame.copy()
         x1, y1, x2, y2 = self.detection_roi_box 
         out=self.model.track(

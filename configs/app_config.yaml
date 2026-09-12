@@ -24,7 +24,8 @@ video_reader:
   src: "data/night.mp4" # path to file
   skip_time: "0" #how much time delay beetwen frames in ms
   
-
+calculate_node:
+  max_age_seconds: 30 #how much seconds await to delete for forget id_class
 
 detection_node:
   weight_path: weights/yolo11x.pt
@@ -46,7 +47,8 @@ show_node:
   scale : 1 # Scale for imshow=True
   imshow: True  # open imshow windows?
   fps_window_N_frames : 15  # lap for average frames
-  show_fps : True  
+  show_fps: True  
+  show_counting: True
   show_roi_border: True  # show borders of roi. its not zones
   show_roi_detector_border: True  # show borders of roi detector. its some small than roi_border
   show_zones: True #show borders zones

@@ -3,7 +3,7 @@ from traffic_control.utils import FPSCounter, count_time
 from traffic_control.elements import FrameElement
 import json
 import numpy as np
-
+from collections import Counter
 COCO_CLASSES: dict[int, str] =  {
         2: "car",
         3: "motorcycle",
@@ -16,6 +16,7 @@ class ShowNode:
         config_show_node=config["show_node"]
         self.scale=config_show_node["scale"]
         self.imshow=config_show_node["imshow"]
+        self.show_counting = config_show_node["show_counting"]
 
         self.fps_window_N_frames=config_show_node["fps_window_N_frames"]
         self.fps_counter=FPSCounter(self.fps_window_N_frames)
@@ -90,8 +91,8 @@ class ShowNode:
         
         if self.show_zones: # show in_out zones
             if self.back_layer_frame is None:
-                self.back_layer_frame=self.add_layer(np.zeros((frame_result.shape), dtype=np.uint8),self.zones["zone_left"]["points"],mask_color=(self.zones["zone_left"]["color"]))
-                self.back_layer_frame=self.add_layer(self.back_layer_frame,self.zones["zone_right"]["points"],mask_color=self.zones["zone_right"]["color"])
+                self.back_layer_frame=self.add_layer(np.zeros((frame_result.shape), dtype=np.uint8),self.zones["0"]["points"],mask_color=(self.zones["0"]["color"]))
+                self.back_layer_frame=self.add_layer(self.back_layer_frame,self.zones["1"]["points"],mask_color=self.zones["1"]["color"])
             frame_result=cv.addWeighted(self.back_layer_frame,1, frame_result, 1, 0)
             #*****
         if self.show_fps:
@@ -108,7 +109,9 @@ class ShowNode:
                 thickness=self.thickness,
                 color=(255, 255, 255),
             )
-        frame_element.frame_result=frame_result
+        if self.show_counting:
+            self._draw_counting_info(frame_result, frame_element.counting.info)
+            frame_element.frame_result=frame_result
         frame_show=cv.resize(frame_result.copy(), (-1, -1), fx=self.scale, fy=self.scale)
         if self.imshow:
             cv.imshow(frame_element.raw.source,frame_show)
@@ -130,5 +133,25 @@ class ShowNode:
         cy = (y1 + y2) / 2
         return rx1 <= cx <= rx2 and ry1 <= cy <= ry2
 
+    def _draw_counting_info(self, frame, counting_info: dict[str, Counter]) -> None:
+        y = 80 if self.show_fps else 40
+        line_height = 30
+        for direction in ("in", "out"):
+            label = "IN:" if direction == "in" else "OUT:"
+            cv.putText(
+                frame, label, (10, y),
+                fontFace=self.fontFace, fontScale=self.fontScale,
+                thickness=self.thickness, color=(255, 255, 255),
+            )
+            y += line_height
 
+            for cls_id, count in sorted(counting_info[direction].items()):
+                class_name = COCO_CLASSES.get(cls_id, "unknown")
+                text = f"{count} {class_name}"
+                cv.putText(
+                    frame, text, (10, y),
+                    fontFace=self.fontFace, fontScale=self.fontScale,
+                    thickness=self.thickness, color=(255, 255, 255),
+                )
+                y += line_height
     
