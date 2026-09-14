@@ -8,6 +8,10 @@ env/
 #Data
 data/
 notebooks/*.pt
+**/services/grafana/*
+!**/services/grafana/.gitkeep
+**/services/influxdb3/*
+!**/services/influxdb3/.gitkeep
 
 # Python
 __pycache__/
@@ -41,11 +45,3 @@ Thumbs.db
 
 #Weights
 weights/*
-# Data (раскомментируй, если не хочешь коммитить датасеты/модели)
-# *.csv
-# *.parquet
-# *.pkl
-# *.pt
-# *.pth
-# models/
-# data/
