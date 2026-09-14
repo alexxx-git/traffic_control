@@ -45,7 +45,7 @@ def count_time(func):
         t_end=time.monotonic()
         delta_time_ms=(t_end-t_start)*1000
         owner=args[0].__class__.__name__ if args else func.__module__
-        logger_profile.debug(f"{owner}.{func.__name__}, time spent {delta_time_ms:.2f} msecs")
+        # logger_profile.debug(f"{owner}.{func.__name__}, time spent {delta_time_ms:.2f} msecs")
         return out
     return wrapper
 class ClassSmoother:
