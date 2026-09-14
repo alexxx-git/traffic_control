@@ -1,8 +1,6 @@
 import cv2 as cv
 import time
-import pathlib as path
 import logging
-import json
 from traffic_control.elements import FrameElement,RawFrame
 
 logger=logging.getLogger(__name__)

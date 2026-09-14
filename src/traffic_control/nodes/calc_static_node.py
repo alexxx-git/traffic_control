@@ -5,15 +5,22 @@ from traffic_control.elements import FrameElement
 from collections import Counter
 import json
 import time
+
+COCO_CLASSES: dict[int, str] =  {
+        2: "car",
+        3: "motorcycle",
+        5: "bus",
+        7: "truck",
+    }
+
 class ZoneCounter:
     def __init__(self, max_age:float=30) -> None:
         self.last_zone: dict[int,int]={}
         self.last_seen_time: dict[int,float]={}
-        self.counts: dict[str,Counter]={
-            "in": Counter(),
-            "out": Counter(),
-        }
         self.max_age=max_age
+        self.new_events: list[dict]=[]
+        self.clases_mapping=COCO_CLASSES
+
 
     def update(self,track_id:int, current_zone:int|None,cls:int, timestep:float)-> None:
         self.last_seen_time[track_id]=timestep
@@ -21,10 +28,26 @@ class ZoneCounter:
             return
         prev_zone=self.last_zone.get(track_id)
         if prev_zone is not None and prev_zone!=current_zone:
-            direction="in" if prev_zone=='0' else "out"
-            if direction in self.counts:
-                self.counts[direction][cls]+=1
+            direction = self._get_direction(prev_zone, current_zone)
+            if direction is not None:
+                self.new_events.append({
+                    "class": self.class_names.get(cls, str(cls)),
+                    "direction": direction,
+                })
         self.last_zone[track_id]=current_zone
+
+    @staticmethod
+    def _get_direction(prev_zone: str, current_zone: str) -> str | None:
+        if prev_zone == "0":
+            return "in"
+        if current_zone == "0":
+            return "out"
+        return None
+
+    def pop_events(self) -> list[dict]:
+        events, self.new_events = self.new_events, []
+        return events
+    
     def cleanup(self,current_timestamp:float) -> None:
         inactive=[tid for tid, t in self.last_seen_time.items() if current_timestamp-t>self.max_age]
         for tid in inactive:
@@ -54,7 +77,7 @@ class CalcStaticNode:
             bottom_center_bb=(float((x2+x1)/2),float(((y1+y2)/2+y2)/2)) #some above then bottom center
             current_zone=self.get_current_zone(bottom_center_bb,self.zones)
             self.zone_counter.update(track_id,current_zone,cls,now)
-        frame_element.counting.info=self.zone_counter.counts
+            frame_element.counting.info = self.zone_counter.pop_events()
         return frame_element
 
     @staticmethod
