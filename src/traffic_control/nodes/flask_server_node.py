@@ -26,7 +26,8 @@ class VideoServerNode:
         while True:
             with self._lock:
                 frame=self._frame
-            ok,jpeg =cv.imencode(".jpg",frame)
+            small = cv.resize(frame, None, fx=0.5, fy=0.5)
+            ok, jpeg = cv.imencode(".jpg", small, [cv.IMWRITE_JPEG_QUALITY, 60])
             if ok:
                 yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n"
                        + jpeg.tobytes() + b"\r\n")

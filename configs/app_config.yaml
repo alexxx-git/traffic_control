@@ -68,5 +68,5 @@ video_server_node:
   port: 8100
 
 kafka_producer_node:
-   bootstrap_servers: kafka:9092
+   bootstrap_servers: localhost:9092
 

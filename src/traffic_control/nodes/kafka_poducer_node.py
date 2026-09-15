@@ -2,7 +2,7 @@ from kafka import KafkaProducer
 from json import dumps
 import time
 
-from traffic_control.utils import process_time
+from traffic_control.utils import count_time
 from traffic_control.elements import FrameElement
 
 class KafkaProducerNode:
@@ -14,8 +14,9 @@ class KafkaProducerNode:
             bootstrap_servers=self.bootstrap_servers,
             value_serializer=lambda x: dumps(x).encode('utf-8')
         )
+        self.camera_id = config["video_reader"]["id"]
 
-    @process_time
+    @count_time
     def process(self, frame_element: FrameElement):
         events = frame_element.counting.info
         for ev in events:
@@ -25,7 +26,7 @@ class KafkaProducerNode:
                 "direction": ev["direction"],
                 "timestamp": int(time.time()),
             }
-            self.producer.send(self.topic, value=payload)
+            self.producer.send(self.topic_name, value=payload)
 
         return frame_element
 
