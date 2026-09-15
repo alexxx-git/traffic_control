@@ -4,12 +4,7 @@ from traffic_control.elements import FrameElement
 import json
 import numpy as np
 from collections import Counter
-COCO_CLASSES: dict[int, str] =  {
-        2: "car",
-        3: "motorcycle",
-        5: "bus",
-        7: "truck",
-    }
+
 class ShowNode:
 
     def __init__(self,config)->None:
@@ -43,7 +38,10 @@ class ShowNode:
         self.roi_show_color = tuple(raw_roi["show"]["color"])
         self.roi_detection_box = tuple(raw_roi["detection"]["box"])
         self.roi_detection_color = tuple(raw_roi["detection"]["color"])        
-            
+
+        with open(config["general"]["coco_classes"], "r") as file2:
+            coco_classes_json=json.load(file2)
+        self.coco_classes= {key : value for key , value in coco_classes_json.items()}    
         self.fontFace = 1
         self.fontScale = 2.0
         self.thickness = 2
@@ -73,7 +71,7 @@ class ShowNode:
                 x1,y1,x2,y2=box
                 cv.rectangle(frame_result,(x1,y1),(x2,y2),(50,25,50),2)
 
-                class_name = COCO_CLASSES.get(class_id, "unknown")
+                class_name = self.coco_classes.get(class_id, "unknown")
                 cv.putText(frame_result,f"{class_name}, {id}",(x1,y1-10),
                                                        fontFace=self.fontFace,
                             fontScale=self.fontScale,
