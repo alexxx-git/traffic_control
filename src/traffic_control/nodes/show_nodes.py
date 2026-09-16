@@ -3,7 +3,7 @@ from traffic_control.utils import FPSCounter, count_time
 from traffic_control.elements import FrameElement
 import json
 import numpy as np
-from collections import Counter
+from collections import  defaultdict
 
 class ShowNode:
 
@@ -15,10 +15,13 @@ class ShowNode:
 
         self.fps_window_N_frames=config_show_node["fps_window_N_frames"]
         self.fps_counter=FPSCounter(self.fps_window_N_frames)
-
+#debug_on
+        self.car_count = defaultdict(lambda: defaultdict(int))
+#debug_off
         self.back_layer_frame =None
 
-        self.show_fps=config_show_node["show_fps"]
+        self.show_fps=config_show_node["show_fps"]\
+        
         self.show_roi_border=config_show_node["show_roi_border"]
         self.show_roi_detector_border=config_show_node["show_roi_detector_border"]
 
@@ -49,7 +52,8 @@ class ShowNode:
 
     @count_time
     def process(self,frame_element:FrameElement, fps_counter=None):
-        frame_result=frame_element.raw.frame.copy()
+        # frame_result=frame_element.raw.frame.copy()
+        frame_result=frame_element.raw.frame
         if self.show_only_yolo_detection :
             #yolo detection
             for box, class_name in zip(frame_element.detection.xyxy, frame_element.detection.cls):
@@ -71,7 +75,7 @@ class ShowNode:
                 x1,y1,x2,y2=box
                 cv.rectangle(frame_result,(x1,y1),(x2,y2),(50,25,50),2)
 
-                class_name = self.coco_classes.get(class_id, "unknown")
+                class_name = self.coco_classes.get(str(class_id), "unknown")
                 cv.putText(frame_result,f"{class_name}, {id}",(x1,y1-10),
                                                        fontFace=self.fontFace,
                             fontScale=self.fontScale,
@@ -107,6 +111,7 @@ class ShowNode:
                 thickness=self.thickness,
                 color=(255, 255, 255),
             )
+            frame_element.frame_result=frame_result
         if self.show_counting:
             self._draw_counting_info(frame_result, frame_element.counting.info)
             frame_element.frame_result=frame_result
@@ -131,9 +136,12 @@ class ShowNode:
         cy = (y1 + y2) / 2
         return rx1 <= cx <= rx2 and ry1 <= cy <= ry2
 
-    def _draw_counting_info(self, frame, counting_info: dict[str, Counter]) -> None:
+    def _draw_counting_info(self, frame, counting_info: list[dict[str, str]]) -> None:
         y = 80 if self.show_fps else 40
         line_height = 30
+        for ev in counting_info:
+            self.car_count[ev["direction"]][ev["class"]] += 1
+
         for direction in ("in", "out"):
             label = "IN:" if direction == "in" else "OUT:"
             cv.putText(
@@ -143,8 +151,7 @@ class ShowNode:
             )
             y += line_height
 
-            for cls_id, count in sorted(counting_info[direction].items()):
-                class_name = COCO_CLASSES.get(cls_id, "unknown")
+            for class_name, count in sorted(self.car_count[direction].items()):
                 text = f"{count} {class_name}"
                 cv.putText(
                     frame, text, (10, y),
@@ -152,4 +159,3 @@ class ShowNode:
                     thickness=self.thickness, color=(255, 255, 255),
                 )
                 y += line_height
-    

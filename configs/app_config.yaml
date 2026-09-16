@@ -52,7 +52,7 @@ show_node:
   imshow: False  # open imshow windows?
   fps_window_N_frames : 15  # lap for average frames
   show_fps: True  
-  show_counting: False
+  show_counting: True
   show_roi_border: True  # show borders of roi. its not zones
   show_roi_detector_border: True  # show borders of roi detector. its some small than roi_border
   show_zones: True #show borders zones

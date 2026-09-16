@@ -10,12 +10,12 @@ import time
 class ZoneCounter:
 
 
-    def __init__(self, config:dict[str,str], max_age:float=30,) -> None:
+    def __init__(self, coco_classes:dict[str,str], max_age:float=30,) -> None:
         self.last_zone: dict[int,int]={}
         self.last_seen_time: dict[int,float]={}
         self.max_age=max_age
         self.new_events: list[dict]=[]
-        self.clases_mapping=config
+        self.coco_classes=coco_classes
 
 
     def update(self,track_id:int, current_zone:int|None,cls:int, timestep:float)-> None:
@@ -27,7 +27,7 @@ class ZoneCounter:
             direction = self._get_direction(prev_zone, current_zone)
             if direction is not None:
                 self.new_events.append({
-                    "class": self.clases_mapping.get(cls, str(cls)),
+                    "class": self.coco_classes.get(str(cls), str(cls)),
                     "direction": direction,
                 })
         self.last_zone[track_id]=current_zone
