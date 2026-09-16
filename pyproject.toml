@@ -1,7 +1,7 @@
 [project]
 name = "traffic-control"
 version = "0.1.0"
-description = "Add your description here"
+description = "For control traffic"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
