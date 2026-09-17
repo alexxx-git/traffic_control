@@ -7,6 +7,7 @@ import time
 import logging
 
 logger_profile=logging.getLogger("profile")
+metrics_buffer: list[dict] = []
 @dataclass
 class FPSCounter:
     max_frames: int = 30
@@ -46,6 +47,11 @@ def count_time(func):
         delta_time_ms=(t_end-t_start)*1000
         owner=args[0].__class__.__name__ if args else func.__module__
         # logger_profile.debug(f"{owner}.{func.__name__}, time spent {delta_time_ms:.2f} msecs")
+        metrics_buffer.append({
+            "node_name": owner,
+            "duration_ms": delta_time_ms,
+            "timestamp": int(time.time() * 1000),
+        })
         return out
     return wrapper
 class ClassSmoother:

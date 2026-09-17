@@ -23,7 +23,7 @@ general:
 # ------------------------------------------------- NODES --------------------------------------------------
 video_reader:
   id: cam0 # Camera ID
-  src: "data/night.mp4" # path to file
+  src: "data/nigth2cars.mp4" # path to file
   skip_time: "0" #how much time delay beetwen frames in ms
 
 
@@ -58,7 +58,7 @@ show_node:
   show_zones: True #show borders zones
   show_only_yolo_detection: False
   fontFace: "1"
-  fontScale : "2"
+  fontScale : "3"
   thickness : "2"
 
 video_server_node:

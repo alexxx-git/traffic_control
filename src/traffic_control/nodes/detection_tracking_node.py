@@ -44,6 +44,7 @@ class DetectionTrackingNodes:
             xyxy[:, [1, 3]] += y1
             frame_element.tracking.xyxy = xyxy
             frame_element.tracking.conf= out.boxes.conf.cpu().numpy()
+            #сглаживаем определение класса
             smoothed_cls=np.array([
                 self.class_smoother.update(tid,cls, conf)
                 for tid, cls, conf in zip

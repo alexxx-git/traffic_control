@@ -24,6 +24,7 @@ class KafkaProducerNode:
                 "camera_id": self.camera_id,
                 "class": ev["class"],
                 "direction": ev["direction"],
+                "track_id": ev["track_id"],
                 "count" :1,
                 "timestamp": int(time.time()),
             }

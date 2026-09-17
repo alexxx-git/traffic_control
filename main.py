@@ -2,7 +2,8 @@ from logging import config
 
 import hydra
 from traffic_control.nodes import VideoReader,DetectionTrackingNodes, ShowNode, CalcStaticNode, VideoServerNode, KafkaProducerNode
-# from src.traffic_control.utils import check_and_set_env_var
+from traffic_control.utils import metrics_buffer
+
 @hydra.main(version_base=None, config_path="configs", config_name="app_config")
 def main(config) -> None:
     print("Hello from traffic-control!")

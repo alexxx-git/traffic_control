@@ -29,6 +29,7 @@ class ZoneCounter:
                 self.new_events.append({
                     "class": self.coco_classes.get(str(cls), str(cls)),
                     "direction": direction,
+                    "track_id" : int(track_id),
                 })
         self.last_zone[track_id]=current_zone
 
