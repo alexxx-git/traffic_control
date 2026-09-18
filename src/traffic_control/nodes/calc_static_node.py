@@ -18,7 +18,7 @@ class ZoneCounter:
         self.coco_classes=coco_classes
 
 
-    def update(self,track_id:int, current_zone:int|None,cls:int, timestep:float)-> None:
+    def update(self,track_id:int, current_zone:int|None,cls:int, conf:float, timestep:float)-> None:
         self.last_seen_time[track_id]=timestep
         if current_zone is None:
             return
@@ -30,6 +30,7 @@ class ZoneCounter:
                     "class": self.coco_classes.get(str(cls), str(cls)),
                     "direction": direction,
                     "track_id" : int(track_id),
+                    "conf" : round(conf,3),
                 })
         self.last_zone[track_id]=current_zone
 
@@ -67,17 +68,26 @@ class CalcStaticNode:
             coco_classes_json=json.load(file2)
         self.coco_classes= {key : value for key , value in coco_classes_json.items()}
         self.zone_counter=ZoneCounter(self.coco_classes, self.max_age_seconds)
+
     @count_time
     def process(self,frame_element:FrameElement)->FrameElement:
         now = time.monotonic()
-        for box,track_id, cls in zip(
+        for box,track_id, cls, conf in zip(
             frame_element.tracking.xyxy,
             frame_element.tracking.id_list,
-            frame_element.tracking.cls):
+            frame_element.tracking.cls,
+            frame_element.tracking.conf,
+            ):
             x1,y1,x2,y2=box
             bottom_center_bb=(float((x2+x1)/2),float(((y1+y2)/2+y2)/2)) #some above then bottom center
             current_zone=self.get_current_zone(bottom_center_bb,self.zones)
-            self.zone_counter.update(track_id,current_zone,cls,now)
+            self.zone_counter.update(
+                track_id=track_id,
+                current_zone=current_zone,
+                cls=int(cls),
+                conf=conf,
+                timestep=now,
+                )
         frame_element.counting.info = self.zone_counter.pop_events()
         return frame_element
 

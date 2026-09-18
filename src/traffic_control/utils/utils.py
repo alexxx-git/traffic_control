@@ -57,12 +57,18 @@ def count_time(func):
 class ClassSmoother:
     def __init__(self) -> None:
         self._class_votes:dict[int,Counter] = defaultdict(Counter)
+        self._frame_counts: dict[int,int]=defaultdict(int)
     def update(self,track_id:int,cls:int,conf)->int:
         track_id=int(track_id)
         cls=int(cls)
         self._class_votes[track_id][cls]+=conf
-        return self._class_votes[track_id].most_common(1)[0][0]
+        self._frame_counts[track_id] += 1
+        win_class, win_conf=self._class_votes[track_id].most_common(1)[0]
+        smooth_conf=win_conf/self._frame_counts[track_id]
+        
+        return win_class, smooth_conf
     def cleanup(self, active_ids: set[int]) -> None:
         inactiv_ids = set(self._class_votes) - active_ids
         for tid in inactiv_ids:
             del self._class_votes[tid]
+            del self._frame_counts[tid]
