@@ -30,7 +30,7 @@ class ZoneCounter:
                     "class": self.coco_classes.get(str(cls), str(cls)),
                     "direction": direction,
                     "track_id" : int(track_id),
-                    "conf" : round(conf,3),
+                    "conf" : round(float(conf),3),
                 })
         self.last_zone[track_id]=current_zone
 

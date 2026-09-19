@@ -67,14 +67,16 @@ class ShowNode:
                            )
         else :
             # tracking
+            
             for box,class_id, id in zip(frame_element.tracking.xyxy,
                                           frame_element.tracking.cls,
                                           frame_element.tracking.id_list):
                 if not self._is_center_inside_roi(box,self.roi_show_box): #work with edges
                     continue
+                
                 x1,y1,x2,y2=box
                 cv.rectangle(frame_result,(x1,y1),(x2,y2),(50,25,50),2)
-
+                
                 class_name = self.coco_classes.get(str(class_id), "unknown")
                 cv.putText(frame_result,f"{class_name}, {id}",(x1,y1-10),
                                                        fontFace=self.fontFace,
