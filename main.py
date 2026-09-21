@@ -18,8 +18,8 @@ def main(config) -> None:
                 frame_element = detection_node.process(frame_element)
                 frame_element = calc_static_node.process(frame_element)
                 frame_element = show_node.process(frame_element)
+                frame_element = video_server_node.process(frame_element)
                 frame_element = kafka_node.process(frame_element)
-                video_server_node.update_image(frame_element.frame_result)
     finally:
         kafka_node.close()
 if __name__ == "__main__":

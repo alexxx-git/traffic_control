@@ -3,6 +3,8 @@ import threading
 import cv2 as cv
 import numpy as np
 from flask import Flask, Response, render_template
+from traffic_control.utils import count_time
+from traffic_control.elements import FrameElement
 
 
 class VideoServerNode:
@@ -35,6 +37,8 @@ class VideoServerNode:
     def _video(self):
        return Response(self._gen(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
-    def update_image(self, image: np.ndarray):
+    @count_time
+    def process(self, frame_element: FrameElement) -> FrameElement:
         with self._lock:
-            self._frame = image
+            self._frame = frame_element.frame_result
+        return frame_element
