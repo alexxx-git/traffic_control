@@ -42,3 +42,4 @@ class VideoServerNode:
         with self._lock:
             self._frame = frame_element.frame_result
         return frame_element
+        

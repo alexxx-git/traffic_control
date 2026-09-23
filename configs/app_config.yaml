@@ -37,7 +37,7 @@ calculate_node:
   max_age_seconds: 30 #how much seconds await to delete for forget id_class
 
 detection_node:
-  weight_path: weights/yolo11x.pt
+  weight_path: weights/yolo26x.engine
   classes_to_detect: [2,3,5,7]  # all transport YOLO
   confidence: 0.40  # than more value less find
   iou: 0.7  # NMS more values more find

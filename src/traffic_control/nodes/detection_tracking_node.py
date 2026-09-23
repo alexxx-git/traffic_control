@@ -11,10 +11,14 @@ class DetectionTrackingNodes:
     def __init__(self, config)-> None:
         device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Compute will be on device: {device}")
-
+        torch.backends.cudnn.benchmark = True
         config_yolo=config["detection_node"]
         self.model = YOLO(config_yolo["weight_path"])
-        self.model.fuse()
+        if config_yolo["weight_path"].endswith(".pt"):
+            self.model.to(device)
+            if device.type == "cuda":
+                self.model.model.half()
+            self.model.fuse()
         self.classes = self.model.names
         self.conf = config_yolo["confidence"]
         self.iou = config_yolo["iou"]
@@ -29,6 +33,7 @@ class DetectionTrackingNodes:
     @count_time
     def process(self, frame_element:FrameElement)->FrameElement:
         frame=frame_element.raw.frame.copy()
+        
         x1, y1, x2, y2 = self.detection_roi_box 
         out=self.model.track(
             frame[y1:y2, x1:x2],
