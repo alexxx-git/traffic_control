@@ -23,9 +23,14 @@ general:
 # ------------------------------------------------- NODES --------------------------------------------------
 video_reader:
   id: cam0 # Camera ID
-  src: "data/night.mp4" # path to file
-  skip_time: "0" #how much time delay beetwen frames in ms
-
+  src: rtsp #"data/night.mp4" # path to file
+  skip_time: 0 #how much time delay beetwen frames in ms
+  host : 192.168.1.72
+  port : 554
+  path : /live/main
+  user : admin
+  password: ${oc.env:TC_CAMERA_PASSWORD}  
+  rtsp_transport: tcp
 
   
 calculate_node:

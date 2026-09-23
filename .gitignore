@@ -1,3 +1,6 @@
+#files
+test_freeze.py
+
 # Virtual environments
 .venv/
 venv/
