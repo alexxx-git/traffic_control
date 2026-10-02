@@ -5,7 +5,11 @@ import os
 import functools
 import time
 import logging
+import datetime as dt
+import requests
 
+
+logger = logging.getLogger(__name__)
 logger_profile=logging.getLogger("profile")
 metrics_buffer: list[dict] = []
 @dataclass
@@ -72,3 +76,27 @@ class ClassSmoother:
         for tid in inactiv_ids:
             del self._class_votes[tid]
             del self._frame_counts[tid]
+
+
+def reset_stats(config) -> None:
+    now = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    cfg=config.influx
+
+  
+    r = requests.delete(
+        f"{cfg.url}/api/v3/configure/table",
+        params={"db": cfg.database,
+                "table": cfg.table,
+                "hard_delete_at": now},          # окончательно, сразу
+        headers={"Authorization": f"Bearer {cfg.token}"},
+        timeout=10,
+    )
+    if r.status_code == 404:
+        logger.info("Nothing to reset (404): %s", r.text.strip())
+        return
+    
+    if "not found" in r.text.lower():
+        logger.info("Table doesn't exist, nothing to reset")
+        return
+    r.raise_for_status()
+    logger.warning("Stats table %s deleted", cfg.table)            

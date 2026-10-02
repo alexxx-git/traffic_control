@@ -75,3 +75,9 @@ video_server_node:
 kafka_producer_node:
    bootstrap_servers: localhost:9092
 
+influx:
+  url: http://localhost:8181   
+  database: traffic
+  table: zone_events
+  token: ${oc.env:TC_INFLUXDB_ADMIN_TOKEN}
+reset_stats: false                

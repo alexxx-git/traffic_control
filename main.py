@@ -1,13 +1,14 @@
-from logging import config
 
 import hydra
 from traffic_control.nodes import VideoReader,DetectionTrackingNodes, ShowNode, CalcStaticNode, VideoServerNode, KafkaProducerNode
-from traffic_control.utils import metrics_buffer
+from traffic_control.utils import reset_stats
 from dotenv import load_dotenv
 load_dotenv()  
 
 @hydra.main(version_base=None, config_path="configs", config_name="app_config")
 def main(config) -> None:
+    if config.reset_stats:
+        reset_stats(config)
     print("Hello from traffic-control!")
     video_reader=VideoReader(config["video_reader"])
     detection_node = DetectionTrackingNodes(config)

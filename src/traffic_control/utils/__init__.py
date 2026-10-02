@@ -1,5 +1,5 @@
 from .utils import FPSCounter, ClassSmoother
-from .utils import check_and_set_env_var, count_time
+from .utils import check_and_set_env_var, count_time, reset_stats
 from .utils import metrics_buffer
 
 __all__ = [
@@ -8,4 +8,5 @@ __all__ = [
     "count_time",
     "ClassSmoother",
     "metrics_buffer",
+    "reset_stats",
 ]
