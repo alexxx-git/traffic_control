@@ -1,0 +1,83 @@
+# --------------------------------------------- HYDRA -----------------------------------------------------
+defaults:  
+  - _self_  
+  - override hydra/hydra_logging: disabled  
+  - override hydra/job_logging: custom
+
+hydra:
+  output_subdir: null
+  run:  
+    dir: .
+
+# ----------------------------------------------- PIPELINE -------------------------------------------------
+
+pipeline:
+  save_video : False
+
+#--------------------------------------------------GENERAL--------------------------------------------------
+
+general:
+  zones: "configs/zones.json" #json with in-out zones of road
+  roi: "configs/roi.json"
+  coco_classes: "configs/coco_classes.json"
+# ------------------------------------------------- NODES --------------------------------------------------
+video_reader:
+  id: cam0 # Camera ID
+  src: rtsp #"data/night.mp4" # path to file
+  skip_time: 0 #how much time delay beetwen frames in ms
+  host : 192.168.1.72
+  port : 554
+  path : /live/main
+  user : admin
+  password: ${oc.env:TC_CAMERA_PASSWORD}  
+  rtsp_transport: tcp
+
+  
+calculate_node:
+  max_age_seconds: 30 #how much seconds await to delete for forget id_class
+
+detection_node:
+  weight_path: weights/yolo26x.engine
+  classes_to_detect: [2,3,5,7]  # all transport YOLO
+  confidence: 0.40  # than more value less find
+  iou: 0.7  # NMS more values more find
+  imgsz: 640  # default value
+  only_roi_area_detect: True
+
+
+tracking_node:  
+  first_track_thresh: 0.5  # Пороговое значение для первичной инициализации трека
+  second_track_thresh: 0.60  # Пороговое значение для поддержания трека
+  match_thresh: 0.95  # Чем больше значение, тем больше может быть расстояние между соседними обнаруженими чтобы держать трек
+  track_buffer: 125  # Время жизни трека после исчезновения из поля зрения (измеряется в числе кадров)
+
+
+show_node:
+  scale : 1 # Scale for imshow=True
+  imshow: False  # open imshow windows?
+  fps_window_N_frames : 15  # lap for average frames
+  show_fps: True  
+  show_counting: True
+  show_roi_border: True  # show borders of roi. its not zones
+  show_roi_detector_border: True  # show borders of roi detector. its some small than roi_border
+  show_zones: True #show borders zones
+  show_only_yolo_detection: False
+  fontFace: "1"
+  fontScale : "3"
+  thickness : "2"
+
+video_server_node:
+  template_folder:  "src/traffic_control/utils/templates"
+  index_page : index.html
+  host_ip : localhost
+  port: 8100
+
+kafka_producer_node:
+   bootstrap_servers: localhost:9092
+
+influx:
+  url: http://localhost:8181   
+  database: traffic
+  table: zone_events
+  token: ${oc.env:TC_INFLUXDB_ADMIN_TOKEN}
+reset_stats: false                
